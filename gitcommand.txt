@@ -1,26 +1,73 @@
-Git 초기 설정
-git config --global user.name "당신의이름"
-git config --global user.email "이메일@example.com"
+1단계: Git 설치 및 초기 설정
+# Git 버전 확인
+git --version
 
-설정 확인하기
+# 사용자 정보 설정
+git config --global user.name "syuenJJang"
+git config --global user.email "acpu1357@gmail.com"
+
+# 설정 확인
 git config --list
 git config user.name
 git config user.email
 
-Git 초기화 확인
+2단계: 로컬 저장소 초기화
+# 프로젝트 폴더에서 Git 저장소 초기화
 git init
 
-Git 상태 확인
+# 현재 상태 확인
 git status
 
-파일을 Staging Area에 추가
+3단계: 첫 번째 파일 추가 및 커밋
+# README.md 파일을 Staging Area에 추가
 git add README.md
 
-상태 다시 확인 (변화 보기)
+# 상태 확인 (Staged 상태)
 git status
 
-첫 번째 커밋 생성
+# 첫 번째 커밋 생성
 git commit -m "Initial commit: Add README.md"
 
-커밋 히스토리 확인
+# 커밋 히스토리 확인
 git log --oneline
+
+4단계: 추가 파일 관리
+# 상태 확인 (gitcommand.txt 발견)
+git status
+
+# gitcommand.txt 파일 추가
+git add gitcommand.txt
+
+# 상태 확인
+git status
+
+# 두 번째 커밋 생성
+git commit -m "Add Git commands reference"
+
+# 최종 상태 확인
+git status
+git log --oneline
+
+5단계: GitHub 저장소 연결
+# GitHub 원격 저장소 연결
+git remote add origin https://github.com/syuenJJang/llm-chatbot-portfolio.git
+
+# 브랜치명을 main으로 설정
+git branch -M main
+
+# 로컬 커밋들을 GitHub에 푸시
+git push -u origin main
+
+6단계: 연결 상태 확인
+# 원격 저장소 연결 상태 확인
+git remote -v
+
+# 모든 브랜치 확인 (로컬 + 원격)
+git branch -a
+
+현재까지 익힌 핵심 Git 워크플로우
+git add [파일명]           # 파일을 Staging Area에 추가
+git commit -m "메시지"     # 커밋 생성
+git push                   # GitHub에 업로드
+git status                 # 현재 상태 확인
+git log --oneline         # 커밋 히스토리 확인
