@@ -71,3 +71,28 @@ git commit -m "메시지"     # 커밋 생성
 git push                   # GitHub에 업로드
 git status                 # 현재 상태 확인
 git log --oneline         # 커밋 히스토리 확인
+
+# 가상환경 생성 (venv라는 이름으로)
+python -m venv venv
+
+# 다른 이름으로 생성
+python -m venv myenv
+python -m venv chatbot-env
+
+# Windows (PowerShell/CMD)
+venv\Scripts\activate
+
+# Windows (Git Bash)
+source venv/Scripts/activate
+
+# Mac/Linux
+source venv/bin/activate
+
+# 모든 OS 공통
+deactivate
+
+# Windows
+Remove-Item -Recurse -Force venv
+
+# Mac/Linux
+rm -rf venv
