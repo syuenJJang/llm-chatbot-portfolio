@@ -1,0 +1,22 @@
+GET pdf-documents/_search
+{
+  "query": {
+    "match": {
+      "content": "근무시간"
+    }
+  }
+}
+
+GET pdf-documents/_search
+{
+  "query": {
+    "term": {
+      "article.keyword": "제3조"
+    }
+  }
+}
+
+GET pdf-documents/_count
+
+DELETE pdf-documents
+
