@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .chat-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .messages {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #fafafa;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            text-align: right;
+        }
+        .gpt-message {
+            background-color: #e9ecef;
+            color: #333;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+        #messageInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #sendButton {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #sendButton:hover {
+            background-color: #0056b3;
+        }
+        #sendButton:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h1>챗봇 채팅</h1>
+
+        <div id="messages" class="messages">
+            <div class="message gpt-message">
+                <strong>챗봇:</strong> 안녕하세요! 무엇을 도와드릴까요?
+            </div>
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="messageInput" placeholder="챗봇에게 질문하세요">
+            <button id="sendButton" onclick="sendMessage()">전송</button>
+            <button id="ragButton" onclick="sendRAGMessage()">PDF 검색</button>
+        </div>
+    </div>
+
+    <!-- <div style="margin-bottom: 20px;">
+        <h3>📄 PDF 업로드</h3>
+        <input type="file" id="pdfFile" accept=".pdf">
+        <button onclick="uploadPDF()">업로드</button>
+        <div id="uploadStatus"></div>
+    </div> -->
+
+    <script>
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton'); 
+
+        function addMessage(content, isUser = false){
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message':'gpt-message'}`;
+            messageDiv.innerHTML = `<strong>${isUser ? '나' : '챗봇'}:</strong> ${content}`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if(!message){
+                messageInput.placeholder = "메세지를 입력해주세요!";
+                messageInput.style.borderColor = "red";
+                return;
+            }
+
+            addMessage(message, true);
+            messageInput.value = '';
+            sendButton.disabled = true;
+            sendButton.textContent = '전송중...';
+
+            try{
+                const response = await fetch('/chat',{
+                    method:'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({message: message})
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    addMessage(data.response);
+                } else {
+                    addMessage(`오류: ${data.error}`);
+                }
+            }catch(error){
+                console.log(error);
+            }finally{
+                sendButton.disabled = false;
+                sendButton.textContent = '전송';
+                messageInput.focus();
+            }   
+        }
+
+        messageInput.addEventListener('keypress',(e) => {
+            if(e.key == 'Enter'){
+                sendMessage();
+            }
+        });
+
+        async function sendRAGMessage() {
+            const message = messageInput.value.trim();
+            if(!message){
+                messageInput.placeholder = "메세지를 입력해주세요!";
+                messageInput.style.borderColor = "red";
+                return;
+            }
+
+            addMessage(message, true);
+            messageInput.value = '';
+            const ragButton = document.getElementById('ragButton');
+            ragButton.disabled = true;
+            ragButton.textContent = 'PDF 검색중...';
+
+            try{
+                const response = await fetch('/rag-chat', {
+                    method:"POST",
+                    headers:{
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({message: message})
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    addMessage(`📚 PDF 검색 결과 (${data.sources}개 문서 참조):\n\n${data.response}`);
+                } else {
+                    addMessage(`오류: ${data.error}`);
+                }
+            }
+            catch(error){
+                console.log(error);
+            }
+            finally{
+                ragButton.disabled = false;
+                ragButton.textContent = 'PDF 검색';
+                messageInput.focus();
+            }
+
+        }
+
+        async function uploadPDF() {
+            const fileInput = document.getElementById('pdfFile');
+            const uploadButton = document.querySelector('button[onclick="uploadPDF()"]');
+            const file = fileInput.files[0];
+
+            if(!file){
+                alert('PDF 파일을 선택하세요');
+                return;
+            }
+
+            uploadButton.disabled = true;
+            uploadButton.textContent = '업로드 중...';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try{
+                const response = await fetch('/upload-pdf',{
+                    method:'POST',
+                    body: formData
+                })
+
+                const result = await response.json();
+                document.getElementById('uploadStatus').innerHTML = result.success ? `✅ ${result.message}` : `❌ ${result.error}`;
+            } catch (error){
+                document.getElementById('uploadStatus').innerHTML = `❌ 업로드 실패: ${error}`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+ANTHROPIC_API_KEY = your-key
+
+
+AWS_ACCESS_KEY_ID=your-key
+AWS_SECRET_ACCESS_KEY=your-key
+AWS_DEFAULT_REGION=your-region
+
+
+OPENSEARCH_HOST=your-host

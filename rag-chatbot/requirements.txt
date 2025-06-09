@@ -1,0 +1,3 @@
+pip install fastapi uvicorn jinja2 pydantic python-dotenv anthropic opensearch-py requests-aws4auth 
+pip install python-multipart PyPDF2 sentence-transformers
+pip install scikit-learn
