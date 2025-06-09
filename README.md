@@ -4,9 +4,10 @@ LLM 기반 챗봇 프로젝트입니다.
 
 ## 기술 스택
 - Python
-- LangChain
+- Anthropic Claude API
 - OpenAI API
-- Streamlit
+- FastAPI
+- AWS OpensearchServerless
 
 ## 목표
 - RAG 기반 챗봇 구현
