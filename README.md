@@ -282,3 +282,5 @@ OpenSearch      몇 개 찾았나?    사용하기 쉽게    없으면 에러   
 서버 호출        체크            변환            반환             포맷팅
 
 ![Demo](./rag-chatbot/testvideo.gif)
+![img](./imgchat1.png)
+![img](./imgchat2.png)
